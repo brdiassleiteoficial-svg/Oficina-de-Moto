@@ -3,17 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Oficina de Moto | Sistema de Gestão Integrada</title>
+  <title>Oficina de Moto | Gestão Integrada com Chat</title>
 
   <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#0E0F12">
-  <meta name="description" content="Sistema de Ordens de Serviço, Mecânicos e Gestão Integrada da Oficina de Moto.">
+  <meta name="description" content="Sistema de Ordens de Serviço, Mecânicos e Chat Integrado para Oficina de Moto.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OficinaMoto">
-
-  <!-- Manifest dinâmico injetado -->
-  <link rel="manifest" id="dynamic-manifest">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -53,7 +50,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Firebase SDKs para Tempo Real (Realtime Database) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -62,11 +59,6 @@
     ::-webkit-scrollbar-track { background: #0E0F12; }
     ::-webkit-scrollbar-thumb { background: #2A303B; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #1f6feb; }
-    .glass-card {
-      background: rgba(22, 24, 29, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
   </style>
 </head>
 <body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white pb-20 md:pb-0">
@@ -108,7 +100,7 @@
           <select id="login-mechanic-id" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none"></select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">PIN / Senha de Acesso (Padrão: 1234)</label>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">PIN de Acesso (Padrão: 1234)</label>
           <input type="password" id="login-mechanic-pin" required placeholder="Digite seu PIN" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
         </div>
         <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-500 text-white font-extrabold text-sm shadow-lg hover:brightness-110 transition-all">
@@ -141,10 +133,6 @@
       </div>
 
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <button id="pwa-install-btn" onclick="installPWA()" class="hidden items-center space-x-1.5 bg-brand-500/10 text-brand-400 border border-brand-500/30 text-xs px-3 py-1.5 rounded-lg hover:bg-brand-500 hover:text-white transition-all font-bold">
-          <i class="fa-solid fa-download"></i>
-          <span class="hidden sm:inline">Baixar App</span>
-        </button>
         <div class="text-right hidden sm:block">
           <p id="user-badge-name" class="text-xs font-bold text-white">-</p>
           <p id="user-badge-role" class="text-[10px] text-brand-400 uppercase font-semibold">-</p>
@@ -167,7 +155,7 @@
           <i class="fa-solid fa-plus-circle"></i> Solicitar Orçamento / OS
         </button>
         <button id="c-tab-btn-my" onclick="switchClientTab('my')" class="py-2.5 px-4 text-gray-400 hover:text-gray-200 border-b-2 border-transparent whitespace-nowrap flex items-center gap-2">
-          <i class="fa-solid fa-clipboard-list"></i> Minhas Motos & OS
+          <i class="fa-solid fa-clipboard-list"></i> Minhas Motos & Atendimento
         </button>
       </div>
 
@@ -195,8 +183,8 @@
 
       <!-- MINHAS OS -->
       <div id="client-subtab-my" class="space-y-4 hidden">
-        <h2 class="text-xl font-bold text-white">Acompanhamento das suas Motos</h2>
-        <div id="client-os-list" class="space-y-3"></div>
+        <h2 class="text-xl font-bold text-white">Acompanhamento & Chat das suas Motos</h2>
+        <div id="client-os-list" class="space-y-4"></div>
       </div>
     </div>
 
@@ -208,7 +196,7 @@
           <h2 class="text-xl font-bold text-white" id="mechanic-panel-title">Ordens de Serviço</h2>
         </div>
       </div>
-      <div id="mechanic-os-list" class="space-y-3"></div>
+      <div id="mechanic-os-list" class="space-y-4"></div>
     </div>
 
     <!-- 3. VISÃO DO ADMIN -->
@@ -254,14 +242,14 @@
 
       <!-- TODAS AS OS -->
       <div class="bg-dark-800 p-5 rounded-xl border border-dark-700 space-y-4">
-        <h3 class="text-base font-bold text-white">Todas as Ordens de Serviço</h3>
-        <div id="admin-all-os" class="space-y-2"></div>
+        <h3 class="text-base font-bold text-white">Todas as Ordens de Serviço & Atendimento</h3>
+        <div id="admin-all-os" class="space-y-4"></div>
       </div>
     </div>
 
   </main>
 
-  <!-- SCRIPT ENGINE COM FIREBASE DA OFICINA -->
+  <!-- FIREBASE & CORE SCRIPT -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAUMXd4nKk6D7OryzZRdTlEwj7L1lWHSWY",
@@ -282,7 +270,7 @@
       db = firebase.database();
       isFirebaseReady = true;
     } catch (e) {
-      console.warn("Erro ao iniciar Firebase:", e);
+      console.warn("Erro no Firebase:", e);
     }
 
     const DEFAULT_MECHANICS = [
@@ -295,10 +283,8 @@
     const STORAGE_SESSION = 'moto_session';
 
     let currentUser = null;
-    let deferredPrompt = null;
 
     window.onload = function() {
-      initPWA();
       initRealtimeSync();
       const saved = localStorage.getItem(STORAGE_SESSION);
       if (saved) {
@@ -338,23 +324,6 @@
       if (currentUser.role === 'client') renderClientOS();
       if (currentUser.role === 'mechanic') renderMechanicDashboard();
       if (currentUser.role === 'admin') renderAdminDashboard();
-    }
-
-    function initPWA() {
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('pwa-install-btn')?.classList.remove('hidden');
-      });
-    }
-
-    function installPWA() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
-      } else {
-        alert('Para instalar, abra o menu do navegador e selecione "Adicionar à Tela Inicial".');
-      }
     }
 
     function switchAuthTab(tab) {
@@ -454,8 +423,10 @@
         defeito,
         status: 'Aguardando Análise',
         cost: 0,
-        mechanicId: '',
-        createdAt: new Date().toLocaleDateString()
+        createdAt: new Date().toLocaleDateString(),
+        messages: [
+          { sender: currentUser.name, text: `Solicitação criada: ${defeito}`, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+        ]
       };
 
       const list = JSON.parse(localStorage.getItem(STORAGE_OS) || '[]');
@@ -469,6 +440,58 @@
       switchClientTab('my');
     }
 
+    /* ENVIAR MENSAGEM NO CHAT INTERNO */
+    function sendChatMessage(osId) {
+      const input = document.getElementById(`chat-input-${osId}`);
+      const text = input.value.trim();
+      if (!text) return;
+
+      let list = JSON.parse(localStorage.getItem(STORAGE_OS) || '[]');
+      list = list.map(o => {
+        if (o.id === osId) {
+          const msgs = o.messages || [];
+          msgs.push({
+            sender: currentUser.name,
+            role: currentUser.role,
+            text: text,
+            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+          });
+          return { ...o, messages: msgs };
+        }
+        return o;
+      });
+
+      syncData(STORAGE_OS, list);
+      input.value = '';
+      refreshUI();
+    }
+
+    function renderChatHTML(o) {
+      const msgs = o.messages || [];
+      return `
+        <div class="mt-3 bg-dark-950 p-3 rounded-xl border border-dark-700 space-y-3">
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-comments text-brand-400 mr-1"></i> Chat da Ordem de Serviço</p>
+          <div class="space-y-2 max-h-40 overflow-y-auto pr-1">
+            ${msgs.map(m => `
+              <div class="text-xs p-2 rounded-lg ${m.sender === currentUser.name ? 'bg-brand-600/30 border border-brand-500/30 ml-4' : 'bg-dark-800 border border-dark-700 mr-4'}">
+                <div class="flex justify-between items-center text-[10px] text-gray-400 mb-0.5">
+                  <span class="font-bold text-brand-300">${m.sender}</span>
+                  <span>${m.time || ''}</span>
+                </div>
+                <p class="text-gray-200">${m.text}</p>
+              </div>
+            `).join('')}
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="chat-input-${o.id}" placeholder="Escreva uma mensagem..." class="flex-grow bg-dark-900 border border-dark-700 rounded-lg p-2 text-xs text-white outline-none focus:border-brand-500">
+            <button onclick="sendChatMessage('${o.id}')" class="px-3 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
     function renderClientOS() {
       const container = document.getElementById('client-os-list');
       const list = JSON.parse(localStorage.getItem(STORAGE_OS) || '[]').filter(o => o.clientName === currentUser.name);
@@ -476,11 +499,12 @@
       container.innerHTML = list.map(o => `
         <div class="bg-dark-800 p-4 rounded-xl border border-dark-700 space-y-2 text-xs">
           <div class="flex justify-between items-center">
-            <span class="font-bold text-brand-400">${o.moto} (${o.placa})</span>
+            <span class="font-bold text-brand-400 text-sm">${o.moto} (${o.placa})</span>
             <span class="px-2.5 py-1 rounded bg-brand-500/20 text-brand-300 font-bold">${o.status}</span>
           </div>
-          <p class="text-gray-300"><strong>Problema:</strong> ${o.defeito}</p>
-          <p class="text-gray-400">Orçamento: <strong class="text-white">R$ ${Number(o.cost).toFixed(2)}</strong> • Aberto em: ${o.createdAt}</p>
+          <p class="text-gray-300"><strong>Defeito informado:</strong> ${o.defeito}</p>
+          <p class="text-gray-400">Orçamento Atual: <strong class="text-white">R$ ${Number(o.cost).toFixed(2)}</strong> • Data: ${o.createdAt}</p>
+          ${renderChatHTML(o)}
         </div>
       `).join('') || '<p class="text-xs text-gray-400 text-center py-4">Nenhuma moto cadastrada.</p>';
     }
@@ -490,20 +514,21 @@
       document.getElementById('mechanic-panel-title').innerText = `OS - ${currentUser.name}`;
 
       document.getElementById('mechanic-os-list').innerHTML = list.map(o => `
-        <div class="bg-dark-800 p-4 rounded-xl border border-dark-700 space-y-2 text-xs">
+        <div class="bg-dark-800 p-4 rounded-xl border border-dark-700 space-y-3 text-xs">
           <div class="flex justify-between items-center">
-            <span class="font-bold text-brand-400">Cliente: ${o.clientName} (${o.clientPhone})</span>
+            <span class="font-bold text-brand-400 text-sm">Cliente: ${o.clientName} (${o.clientPhone})</span>
             <span class="px-2.5 py-1 rounded bg-dark-900 text-yellow-400 font-bold">${o.status}</span>
           </div>
           <p class="text-white font-semibold">Moto: ${o.moto} [${o.placa}]</p>
           <p class="text-gray-300">Defeito: ${o.defeito}</p>
           <div class="pt-2 flex items-center justify-between border-t border-dark-700">
-            <span>Orçamento: R$ ${Number(o.cost).toFixed(2)}</span>
+            <span>Orçamento: <strong>R$ ${Number(o.cost).toFixed(2)}</strong></span>
             <div class="space-x-2">
-              <button onclick="updateOSStatus('${o.id}', 'Em Andamento')" class="px-3 py-1 bg-blue-600 text-white rounded font-bold">Em Andamento</button>
-              <button onclick="updateOSStatus('${o.id}', 'Concluído')" class="px-3 py-1 bg-emerald-600 text-white rounded font-bold">Concluir</button>
+              <button onclick="updateOSStatus('${o.id}', 'Em Andamento')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Em Andamento</button>
+              <button onclick="updateOSStatus('${o.id}', 'Concluído')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold">Concluir OS</button>
             </div>
           </div>
+          ${renderChatHTML(o)}
         </div>
       `).join('') || '<p class="text-xs text-gray-400 text-center py-6">Nenhuma Ordem de Serviço na oficina.</p>';
     }
@@ -512,7 +537,7 @@
       let list = JSON.parse(localStorage.getItem(STORAGE_OS) || '[]');
       let cost = 0;
       if (newStatus === 'Concluído') {
-        const val = prompt('Informe o valor total do serviço (R$):', '100');
+        const val = prompt('Informe o valor final do serviço (R$):', '100');
         if (val === null) return;
         cost = parseFloat(val) || 0;
       }
@@ -540,12 +565,18 @@
       `).join('');
 
       document.getElementById('admin-all-os').innerHTML = list.map(o => `
-        <div class="bg-dark-900 p-3 rounded-lg border border-dark-700 flex justify-between items-center text-xs">
-          <div>
-            <strong class="text-brand-400">${o.moto} [${o.placa}]</strong> - ${o.clientName}
-            <p class="text-gray-400">Status: <span class="text-white font-semibold">${o.status}</span> • Valor: R$ ${Number(o.cost).toFixed(2)}</p>
+        <div class="bg-dark-900 p-4 rounded-xl border border-dark-700 space-y-3 text-xs">
+          <div class="flex justify-between items-center">
+            <div>
+              <strong class="text-brand-400 text-sm">${o.moto} [${o.placa}]</strong>
+              <p class="text-gray-400">Cliente: ${o.clientName} (${o.clientPhone})</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-white font-semibold px-2 py-1 bg-dark-800 rounded border border-dark-700">${o.status} • R$ ${Number(o.cost).toFixed(2)}</span>
+              <button onclick="deleteOS('${o.id}')" class="text-red-400 hover:text-red-300 p-1.5"><i class="fa-solid fa-trash"></i></button>
+            </div>
           </div>
-          <button onclick="deleteOS('${o.id}')" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
+          ${renderChatHTML(o)}
         </div>
       `).join('') || '<p class="text-xs text-gray-400">Sem ordens de serviço.</p>';
     }
