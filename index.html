@@ -12,6 +12,29 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OficinaMoto">
 
+  <!-- Manifest dinâmico embutido para permitir instalação -->
+  <link rel="manifest" id="pwa-manifest">
+  <script>
+    const manifestData = {
+      "name": "Oficina de Moto",
+      "short_name": "OficinaMoto",
+      "start_url": "./",
+      "display": "standalone",
+      "background_color": "#0E0F12",
+      "theme_color": "#0E0F12",
+      "icons": [
+        {
+          "src": "https://cdn-icons-png.flaticon.com/512/3209/3209993.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    };
+    const stringManifest = JSON.stringify(manifestData);
+    const blob = new Blob([stringManifest], {type: 'application/json'});
+    document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -133,6 +156,12 @@
       </div>
 
       <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- BOTÃO DE INSTALAÇÃO MANUAL VISÍVEL -->
+        <button onclick="triggerInstall()" class="px-3 py-1.5 rounded-lg bg-brand-500 text-white hover:bg-brand-600 text-xs font-extrabold transition-all flex items-center gap-1.5 shadow-md shadow-brand-500/20">
+          <i class="fa-solid fa-download"></i>
+          <span>Baixar App</span>
+        </button>
+
         <div class="text-right hidden sm:block">
           <p id="user-badge-name" class="text-xs font-bold text-white">-</p>
           <p id="user-badge-role" class="text-[10px] text-brand-400 uppercase font-semibold">-</p>
@@ -264,6 +293,7 @@
 
     let db = null;
     let isFirebaseReady = false;
+    let deferredPrompt = null;
 
     try {
       firebase.initializeApp(firebaseConfig);
@@ -286,12 +316,34 @@
 
     window.onload = function() {
       initRealtimeSync();
+      initPWAInstall();
       const saved = localStorage.getItem(STORAGE_SESSION);
       if (saved) {
         currentUser = JSON.parse(saved);
         bootApp();
       }
     };
+
+    function initPWAInstall() {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+      });
+    }
+
+    function triggerInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('Usuário aceitou a instalação');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        alert('Dica para instalar:\n\n• No celular: Toque nos três pontinhos do navegador e selecione "Adicionar à tela inicial" ou "Instalar aplicativo".\n• No computador: Clique no ícone de instalação na barra de endereços.');
+      }
+    }
 
     function initRealtimeSync() {
       if (isFirebaseReady && db) {
@@ -440,7 +492,6 @@
       switchClientTab('my');
     }
 
-    /* ENVIAR MENSAGEM NO CHAT INTERNO (CORRIGIDO PARA ADMIN/MECÂNICO/CLIENTE) */
     function sendChatMessage(osId, btnElement) {
       const container = btnElement.closest('.chat-container');
       const input = container.querySelector('.chat-input-field');
