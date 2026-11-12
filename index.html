@@ -332,7 +332,7 @@
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         
-        osc.type = 'sine';
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5 (agradável)
         
         gain.gain.setValueAtTime(0.20, audioCtx.currentTime);
