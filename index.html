@@ -88,7 +88,7 @@
 
   <!-- TELA DE LOGIN / AUTENTICAÇÃO -->
   <div id="auth-screen" class="fixed inset-0 z-50 bg-dark-950 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="max-w-md w-full bg-dark-800 border border-brand-500/30 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
+    <div class="max-w-md w-full bg-dark-800 border border-brand-500/35 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
       <div class="text-center space-y-2">
         <div class="w-16 h-16 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center text-white font-black text-2xl shadow-xl mx-auto">
           <i class="fa-solid fa-motorcycle"></i>
@@ -311,6 +311,7 @@
     let MECHANICS = JSON.parse(localStorage.getItem('moto_mechanics')) || DEFAULT_MECHANICS;
     const STORAGE_OS = 'moto_os_list';
     const STORAGE_SESSION = 'moto_session';
+    let previousTotalMessages = {};
 
     let currentUser = null;
 
@@ -323,6 +324,29 @@
         bootApp();
       }
     };
+
+    // Função que toca um bipe suave usando a Web Audio API nativa
+    function playNotificationSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5 (agradável)
+        
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.15);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } catch (e) {
+        console.warn("Áudio bloqueado ou não suportado:", e);
+      }
+    }
 
     function initPWAInstall() {
       window.addEventListener('beforeinstallprompt', (e) => {
@@ -355,8 +379,22 @@
             refreshUI();
           }
         });
+
         db.ref('os_list').on('value', snapshot => {
           const val = snapshot.val() || [];
+          
+          val.forEach(o => {
+            const prevCount = previousTotalMessages[o.id] || 0;
+            const currentCount = (o.messages || []).length;
+            if (prevCount > 0 && currentCount > prevCount) {
+              const lastMsg = o.messages[o.messages.length - 1];
+              if (lastMsg && lastMsg.sender !== currentUser?.name) {
+                playNotificationSound();
+              }
+            }
+            previousTotalMessages[o.id] = currentCount;
+          });
+
           localStorage.setItem(STORAGE_OS, JSON.stringify(val));
           refreshUI();
         });
@@ -515,6 +553,7 @@
 
       syncData(STORAGE_OS, list);
       input.value = '';
+      playNotificationSound(); // Toca som ao enviar
       refreshUI();
     }
 
@@ -660,7 +699,7 @@
         let list = JSON.parse(localStorage.getItem(STORAGE_OS) || '[]');
         list = list.filter(o => o.id !== id);
         syncData(STORAGE_OS, list);
-        renderAdminDashboard();
+        refreshUI();
       }
     }
   </script>
