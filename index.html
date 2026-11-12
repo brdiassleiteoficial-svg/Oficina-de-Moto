@@ -325,24 +325,25 @@
       }
     };
 
-    // Som tipo "Triangle" (Pop seco, estilo mensagem de app)
+    // Som tipo "Triangle" otimizado (mais alto e encorpado)
     function playNotificationSound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         
-        osc.type = 'triangle'; // Onda triangle (pop seco e encorpado)
+        osc.type = 'triangle'; 
         osc.frequency.setValueAtTime(784, audioCtx.currentTime); // Nota Sol (G5)
         
-        gain.gain.setValueAtTime(0.7, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08); // Rápido e seco
+        // Aumentamos o ganho de 0.7 para 1.5 (volume máximo limpo)
+        gain.gain.setValueAtTime(1.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
         
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.08);
+        osc.stop(audioCtx.currentTime + 0.12);
       } catch (e) {
         console.warn("Áudio bloqueado ou não suportado:", e);
       }
