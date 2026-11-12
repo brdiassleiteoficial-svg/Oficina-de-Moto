@@ -70,7 +70,7 @@
   <!-- Google Fonts & Font Awesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Firebase SDKs -->
@@ -86,61 +86,83 @@
 </head>
 <body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white pb-20 md:pb-0">
 
-  <!-- TELA DE LOGIN / AUTENTICAÇÃO -->
+  <!-- TELA DE LOGIN / AUTENTICAÇÃO COM BANNER DE FUNDO -->
   <div id="auth-screen" class="fixed inset-0 z-50 bg-dark-950 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="max-w-md w-full bg-dark-800 border border-brand-500/35 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center text-white font-black text-2xl shadow-xl mx-auto">
-          <i class="fa-solid fa-motorcycle"></i>
+    <!-- Caixa de Login com Banner Integrado no Topo -->
+    <div class="max-w-md w-full bg-dark-800 border border-brand-500/40 rounded-3xl overflow-hidden shadow-2xl relative">
+      
+      <!-- BANNER COM MOTO DE FUNDO E LETRAS ROBUSTAS -->
+      <div class="h-44 sm:h-48 w-full bg-dark-950 relative overflow-hidden flex flex-col items-center justify-center text-center p-4 border-b border-dark-700">
+        <!-- Imagem de Fundo (Moto e Oficina) -->
+        <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1000&auto=format&fit=crop" alt="Oficina Alto Nível" class="absolute inset-0 w-full h-full object-cover object-center opacity-50">
+        
+        <!-- Degradê escuro para destacar o texto -->
+        <div class="absolute inset-0 bg-gradient-to-t from-dark-800 via-dark-950/40 to-transparent"></div>
+
+        <!-- Textos Robustos e Nome do Dono -->
+        <div class="relative z-10 space-y-1">
+          <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white uppercase drop-shadow-lg" style="text-shadow: 0 3px 10px rgba(0,0,0,0.9);">
+            Oficina <span class="text-brand-400">Alto Nível</span>
+          </h1>
+          <div class="inline-block px-3 py-0.5 rounded-full bg-dark-900/90 border border-brand-500/40 shadow-md">
+            <p class="text-[11px] sm:text-xs font-bold text-gray-200 uppercase tracking-widest">
+              David Rafael
+            </p>
+          </div>
         </div>
-        <h1 class="font-bold text-2xl tracking-wider text-white">Oficina Alto Nível</h1>
-        <p class="text-brand-400 text-sm uppercase tracking-widest font-semibold">David Rafael</p>
-        <p class="text-xs text-gray-400 pt-2">Selecione seu perfil de acesso</p>
       </div>
 
-      <div class="grid grid-cols-3 gap-1 bg-dark-900 p-1.5 rounded-xl border border-dark-700 text-xs font-semibold">
-        <button id="auth-tab-client" onclick="switchAuthTab('client')" class="py-2.5 rounded-lg bg-brand-500 text-white font-bold transition-all">Cliente</button>
-        <button id="auth-tab-mechanic" onclick="switchAuthTab('mechanic')" class="py-2.5 rounded-lg text-gray-400 hover:text-white transition-all">Mecânico</button>
-        <button id="auth-tab-admin" onclick="switchAuthTab('admin')" class="py-2.5 rounded-lg text-gray-400 hover:text-white transition-all">Admin</button>
+      <!-- CORPO DO LOGIN (FORMULÁRIOS) -->
+      <div class="p-6 sm:p-8 space-y-6">
+        <div class="text-center">
+          <p class="text-xs text-gray-400">Selecione seu perfil de acesso</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-1 bg-dark-900 p-1.5 rounded-xl border border-dark-700 text-xs font-semibold">
+          <button id="auth-tab-client" onclick="switchAuthTab('client')" class="py-2.5 rounded-lg bg-brand-500 text-white font-bold transition-all">Cliente</button>
+          <button id="auth-tab-mechanic" onclick="switchAuthTab('mechanic')" class="py-2.5 rounded-lg text-gray-400 hover:text-white transition-all">Mecânico</button>
+          <button id="auth-tab-admin" onclick="switchAuthTab('admin')" class="py-2.5 rounded-lg text-gray-400 hover:text-white transition-all">Admin</button>
+        </div>
+
+        <form id="auth-form-client" onsubmit="loginAsClient(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Seu Nome *</label>
+            <input type="text" id="login-client-name" required placeholder="Ex: Francisco Neto" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Seu WhatsApp *</label>
+            <input type="tel" id="login-client-phone" required placeholder="(84) 99999-9999" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
+          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-extrabold text-sm shadow-lg shadow-brand-500/10 hover:brightness-110 transition-all">
+            Entrar como Cliente <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </form>
+
+        <form id="auth-form-mechanic" onsubmit="loginAsMechanic(event)" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Selecione o Mecânico</label>
+            <select id="login-mechanic-id" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">PIN de Acesso (Padrão: 1234)</label>
+            <input type="password" id="login-mechanic-pin" required placeholder="Digite seu PIN" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
+          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-500 text-white font-extrabold text-sm shadow-lg hover:brightness-110 transition-all">
+            Acessar Ordens de Serviço
+          </button>
+        </form>
+
+        <form id="auth-form-admin" onsubmit="loginAsAdmin(event)" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Senha do Administrador (Padrão: admin123)</label>
+            <input type="password" id="login-admin-pass" required placeholder="Digite a senha master" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
+          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-sm shadow-lg transition-all">
+            Acessar Painel Gerencial
+          </button>
+        </form>
       </div>
 
-      <form id="auth-form-client" onsubmit="loginAsClient(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">Seu Nome *</label>
-          <input type="text" id="login-client-name" required placeholder="Ex: Francisco Neto" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">Seu WhatsApp *</label>
-          <input type="tel" id="login-client-phone" required placeholder="(84) 99999-9999" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
-        </div>
-        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-extrabold text-sm shadow-lg shadow-brand-500/10 hover:brightness-110 transition-all">
-          Entrar como Cliente <i class="fa-solid fa-arrow-right ml-1"></i>
-        </button>
-      </form>
-
-      <form id="auth-form-mechanic" onsubmit="loginAsMechanic(event)" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">Selecione o Mecânico</label>
-          <select id="login-mechanic-id" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none"></select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">PIN de Acesso (Padrão: 1234)</label>
-          <input type="password" id="login-mechanic-pin" required placeholder="Digite seu PIN" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
-        </div>
-        <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-500 text-white font-extrabold text-sm shadow-lg hover:brightness-110 transition-all">
-          Acessar Ordens de Serviço
-        </button>
-      </form>
-
-      <form id="auth-form-admin" onsubmit="loginAsAdmin(event)" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">Senha do Administrador (Padrão: admin123)</label>
-          <input type="password" id="login-admin-pass" required placeholder="Digite a senha master" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
-        </div>
-        <button type="submit" class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-sm shadow-lg transition-all">
-          Acessar Painel Gerencial
-        </button>
-      </form>
     </div>
   </div>
 
@@ -176,131 +198,105 @@
   </header>
 
   <!-- MAIN CONTAINER -->
-  <main class="flex-grow max-w-7xl w-full mx-auto p-0 md:p-6 space-y-6">
+  <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
 
-    <!-- NOVO BANNER COMPACTO - VISÍVEL APÓS LOGIN -->
-    <div id="app-banner" class="hidden aspect-[10/3] w-full bg-dark-950 border-b border-dark-700 md:border md:rounded-3xl md:mt-6 overflow-hidden relative shadow-2xl">
-      <!-- Imagem de Fundo (Moto + Oficina) -->
-      <img src="URL_DA_SUA_IMAGEM_HOSPEDADA" alt="Oficina Alto Nível" class="absolute inset-0 w-full h-full object-cover object-center opacity-60">
-      
-      <!-- Degradê para legibilidade -->
-      <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/20 to-transparent"></div>
+    <!-- 1. VISÃO DO CLIENTE -->
+    <div id="role-view-client" class="space-y-6 hidden">
+      <div class="flex border-b border-dark-700 text-xs sm:text-sm font-medium overflow-x-auto gap-2">
+        <button id="c-tab-btn-new" onclick="switchClientTab('new')" class="py-2.5 px-4 text-brand-400 border-b-2 border-brand-500 whitespace-nowrap font-bold flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle"></i> Solicitar Orçamento / OS
+        </button>
+        <button id="c-tab-btn-my" onclick="switchClientTab('my')" class="py-2.5 px-4 text-gray-400 hover:text-gray-200 border-b-2 border-transparent whitespace-nowrap flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-list"></i> Minhas Motos & Atendimento
+        </button>
+      </div>
 
-      <!-- Conteúdo do Banner (Letras Robustas) -->
-      <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter text-white uppercase leading-none" style="font-family: 'Inter', sans-serif; text-shadow: 0 4px 12px rgba(0,0,0,0.8);">
-          Oficina <span class="text-brand-400">Alto Nível</span>
-        </h1>
-        <div class="mt-2 sm:mt-3 px-4 py-1 rounded-full bg-dark-900/80 border border-dark-600 backdrop-blur-sm shadow-xl">
-          <p class="text-xs sm:text-sm font-bold text-gray-200 uppercase tracking-widest">
-            David Rafael
-          </p>
-        </div>
+      <!-- NOVA SOLICITAÇÃO -->
+      <div id="client-subtab-new" class="space-y-6 max-w-2xl mx-auto bg-dark-800 p-6 rounded-2xl border border-dark-700">
+        <h2 class="text-xl font-bold text-white">Abrir Nova Ordem de Serviço</h2>
+        <form onsubmit="submitClientOS(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Modelo da Moto e Ano *</label>
+            <input type="text" id="os-moto" required placeholder="Ex: Honda CG 160 Titan - 2023" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Placa da Moto *</label>
+            <input type="text" id="os-placa" required placeholder="Ex: QGY-5H20" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none uppercase">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">O que a moto precisa? (Defeito / Revisão) *</label>
+            <textarea id="os-defeito" rows="3" required placeholder="Ex: Moto fazendo barulho na relação e freio dianteiro roncando..." class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none"></textarea>
+          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-500 text-white font-extrabold text-sm hover:bg-brand-600 transition-all shadow-lg">
+            Enviar Pedido para a Oficina
+          </button>
+        </form>
+      </div>
+
+      <!-- MINHAS OS -->
+      <div id="client-subtab-my" class="space-y-4 hidden">
+        <h2 class="text-xl font-bold text-white">Acompanhamento & Chat das suas Motos</h2>
+        <div id="client-os-list" class="space-y-4"></div>
       </div>
     </div>
 
-    <!-- ÁREA DE CONTEÚDO (COM PADDING LATERAL NO MOBILE) -->
-    <div class="p-4 md:p-0 space-y-6">
-
-      <!-- 1. VISÃO DO CLIENTE -->
-      <div id="role-view-client" class="space-y-6 hidden">
-        <div class="flex border-b border-dark-700 text-xs sm:text-sm font-medium overflow-x-auto gap-2">
-          <button id="c-tab-btn-new" onclick="switchClientTab('new')" class="py-2.5 px-4 text-brand-400 border-b-2 border-brand-500 whitespace-nowrap font-bold flex items-center gap-2">
-            <i class="fa-solid fa-plus-circle"></i> Solicitar Orçamento / OS
-          </button>
-          <button id="c-tab-btn-my" onclick="switchClientTab('my')" class="py-2.5 px-4 text-gray-400 hover:text-gray-200 border-b-2 border-transparent whitespace-nowrap flex items-center gap-2">
-            <i class="fa-solid fa-clipboard-list"></i> Minhas Motos & Atendimento
-          </button>
+    <!-- 2. VISÃO DO MECÂNICO -->
+    <div id="role-view-mechanic" class="space-y-6 hidden">
+      <div class="bg-dark-800 p-4 rounded-2xl border border-dark-700 flex justify-between items-center">
+        <div>
+          <span class="text-xs text-brand-400 font-semibold uppercase">Painel do Mecânico</span>
+          <h2 class="text-xl font-bold text-white" id="mechanic-panel-title">Ordens de Serviço</h2>
         </div>
+      </div>
+      <div id="mechanic-os-list" class="space-y-4"></div>
+    </div>
 
-        <!-- NOVA SOLICITAÇÃO -->
-        <div id="client-subtab-new" class="space-y-6 max-w-2xl mx-auto bg-dark-800 p-6 rounded-2xl border border-dark-700">
-          <h2 class="text-xl font-bold text-white">Abrir Nova Ordem de Serviço</h2>
-          <form onsubmit="submitClientOS(event)" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 mb-1">Modelo da Moto e Ano *</label>
-              <input type="text" id="os-moto" required placeholder="Ex: Honda CG 160 Titan - 2023" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 mb-1">Placa da Moto *</label>
-              <input type="text" id="os-placa" required placeholder="Ex: QGY-5H20" class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none uppercase">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 mb-1">O que a moto precisa? (Defeito / Revisão) *</label>
-              <textarea id="os-defeito" rows="3" required placeholder="Ex: Moto fazendo barulho na relação e freio dianteiro roncando..." class="w-full bg-dark-900 border border-dark-600 rounded-xl p-3 text-sm text-white focus:border-brand-500 outline-none"></textarea>
-            </div>
-            <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-500 text-white font-extrabold text-sm hover:bg-brand-600 transition-all shadow-lg">
-              Enviar Pedido para a Oficina
+    <!-- 3. VISÃO DO ADMIN -->
+    <div id="role-view-admin" class="space-y-6 hidden">
+      <div class="bg-dark-800 p-4 rounded-2xl border border-dark-700 flex justify-between items-center">
+        <div>
+          <span class="text-xs text-brand-400 font-semibold uppercase">Administração Geral</span>
+          <h2 class="text-xl font-bold text-white">Painel da Oficina</h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-dark-800 p-4 rounded-xl border border-dark-700">
+          <p class="text-xs text-gray-400">Faturamento Total</p>
+          <h3 class="text-2xl font-bold text-brand-400 mt-1" id="admin-stat-revenue">R$ 0,00</h3>
+        </div>
+        <div class="bg-dark-800 p-4 rounded-xl border border-dark-700">
+          <p class="text-xs text-gray-400">OS em Aberto</p>
+          <h3 class="text-2xl font-bold text-white mt-1" id="admin-stat-count">0</h3>
+        </div>
+      </div>
+
+      <!-- CADASTRAR MECÂNICO -->
+      <div class="bg-dark-800 p-5 rounded-xl border border-dark-700 space-y-4">
+        <h3 class="text-base font-bold text-white"><i class="fa-solid fa-user-gear text-brand-400 mr-2"></i> Gerenciar Mecânicos</h3>
+        <form onsubmit="addNewMechanic(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-dark-900 p-4 rounded-xl border border-dark-700">
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-300 mb-1">Nome do Mecânico</label>
+            <input type="text" id="new-mech-name" required placeholder="Ex: João da Oficina" class="w-full bg-dark-800 border border-dark-600 rounded-lg p-2.5 text-xs text-white outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-300 mb-1">Especialidade</label>
+            <input type="text" id="new-mech-role" required placeholder="Ex: Injeção & Motor" class="w-full bg-dark-800 border border-dark-600 rounded-lg p-2.5 text-xs text-white outline-none">
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-lg text-xs transition-all">
+              <i class="fa-solid fa-user-plus mr-1"></i> Adicionar Mecânico
             </button>
-          </form>
-        </div>
-
-        <!-- MINHAS OS -->
-        <div id="client-subtab-my" class="space-y-4 hidden">
-          <h2 class="text-xl font-bold text-white">Acompanhamento & Chat das suas Motos</h2>
-          <div id="client-os-list" class="space-y-4"></div>
-        </div>
+          </div>
+        </form>
+        <div id="admin-mechanics-list" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2"></div>
       </div>
 
-      <!-- 2. VISÃO DO MECÂNICO -->
-      <div id="role-view-mechanic" class="space-y-6 hidden">
-        <div class="bg-dark-800 p-4 rounded-2xl border border-dark-700 flex justify-between items-center">
-          <div>
-            <span class="text-xs text-brand-400 font-semibold uppercase">Painel do Mecânico</span>
-            <h2 class="text-xl font-bold text-white" id="mechanic-panel-title">Ordens de Serviço</h2>
-          </div>
-        </div>
-        <div id="mechanic-os-list" class="space-y-4"></div>
+      <!-- TODAS AS OS -->
+      <div class="bg-dark-800 p-5 rounded-xl border border-dark-700 space-y-4">
+        <h3 class="text-base font-bold text-white">Todas as Ordens de Serviço & Atendimento</h3>
+        <div id="admin-all-os" class="space-y-4"></div>
       </div>
-
-      <!-- 3. VISÃO DO ADMIN -->
-      <div id="role-view-admin" class="space-y-6 hidden">
-        <div class="bg-dark-800 p-4 rounded-2xl border border-dark-700 flex justify-between items-center">
-          <div>
-            <span class="text-xs text-brand-400 font-semibold uppercase">Administração Geral</span>
-            <h2 class="text-xl font-bold text-white">Painel da Oficina</h2>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="bg-dark-800 p-4 rounded-xl border border-dark-700">
-            <p class="text-xs text-gray-400">Faturamento Total</p>
-            <h3 class="text-2xl font-bold text-brand-400 mt-1" id="admin-stat-revenue">R$ 0,00</h3>
-          </div>
-          <div class="bg-dark-800 p-4 rounded-xl border border-dark-700">
-            <p class="text-xs text-gray-400">OS em Aberto</p>
-            <h3 class="text-2xl font-bold text-white mt-1" id="admin-stat-count">0</h3>
-          </div>
-        </div>
-
-        <!-- CADASTRAR MECÂNICO -->
-        <div class="bg-dark-800 p-5 rounded-xl border border-dark-700 space-y-4">
-          <h3 class="text-base font-bold text-white"><i class="fa-solid fa-user-gear text-brand-400 mr-2"></i> Gerenciar Mecânicos</h3>
-          <form onsubmit="addNewMechanic(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-dark-900 p-4 rounded-xl border border-dark-700">
-            <div>
-              <label class="block text-[11px] font-semibold text-gray-300 mb-1">Nome do Mecânico</label>
-              <input type="text" id="new-mech-name" required placeholder="Ex: João da Oficina" class="w-full bg-dark-800 border border-dark-600 rounded-lg p-2.5 text-xs text-white outline-none">
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-gray-300 mb-1">Especialidade</label>
-              <input type="text" id="new-mech-role" required placeholder="Ex: Injeção & Motor" class="w-full bg-dark-800 border border-dark-600 rounded-lg p-2.5 text-xs text-white outline-none">
-            </div>
-            <div class="flex items-end">
-              <button type="submit" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-lg text-xs transition-all">
-                <i class="fa-solid fa-user-plus mr-1"></i> Adicionar Mecânico
-              </button>
-            </div>
-          </form>
-          <div id="admin-mechanics-list" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2"></div>
-        </div>
-
-        <!-- TODAS AS OS -->
-        <div class="bg-dark-800 p-5 rounded-xl border border-dark-700 space-y-4">
-          <h3 class="text-base font-bold text-white">Todas as Ordens de Serviço & Atendimento</h3>
-          <div id="admin-all-os" class="space-y-4"></div>
-        </div>
-      </div>
-
     </div>
 
   </main>
@@ -362,9 +358,8 @@
         osc.type = 'triangle'; 
         osc.frequency.setValueAtTime(784, audioCtx.currentTime); // Nota Sol (G5)
         
-        // Aumentamos o ganho para 1.5 (volume máximo limpo)
         gain.gain.setValueAtTime(1.5, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12); // Ligeiramente mais longo para dar corpo
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
         
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -493,14 +488,12 @@
       currentUser = null;
       document.getElementById('auth-screen').classList.remove('hidden');
       document.getElementById('main-header').classList.add('hidden');
-      document.getElementById('app-banner').classList.add('hidden');
       ['client', 'mechanic', 'admin'].forEach(r => document.getElementById(`role-view-${r}`).classList.add('hidden'));
     }
 
     function bootApp() {
       document.getElementById('auth-screen').classList.add('hidden');
       document.getElementById('main-header').classList.remove('hidden');
-      document.getElementById('app-banner').classList.remove('hidden');
       
       document.getElementById('user-badge-name').innerText = currentUser.name;
       document.getElementById('user-badge-role').innerText = currentUser.role.toUpperCase();
@@ -584,7 +577,7 @@
 
       syncData(STORAGE_OS, list);
       input.value = '';
-      playNotificationSound(); // Toca som ao enviar mensagem
+      playNotificationSound();
       refreshUI();
     }
 
